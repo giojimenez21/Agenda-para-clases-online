@@ -1,5 +1,7 @@
 const { gql } = require("apollo-server");
 const { authTypeDefs, authResolvers } = require("./auth");
+const { breakTypeDefs, breakResolvers } = require("./break");
+const { courseTypeDefs, courseResolvers } = require("./course");
 const { eventsTypeDefs, eventsResolvers } = require("./events");
 
 const rootTypeDefs = gql`
@@ -18,9 +20,9 @@ const rootResolvers = {
     }
 }
 
-const typeDefs = [rootTypeDefs, eventsTypeDefs, authTypeDefs];
+const typeDefs = [rootTypeDefs, eventsTypeDefs, authTypeDefs, courseTypeDefs, breakTypeDefs];
 
-const resolvers = [rootResolvers, eventsResolvers, authResolvers];
+const resolvers = [rootResolvers, eventsResolvers, authResolvers, courseResolvers, breakResolvers];
 
 
 module.exports = {

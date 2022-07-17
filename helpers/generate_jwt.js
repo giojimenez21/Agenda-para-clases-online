@@ -28,6 +28,10 @@ const validateJWT = (token) => {
         }
 
         const payload = jwt.verify(token, process.env.SECRET_JWT);
+        
+        if(!payload.authenticated) {
+            throw new AuthenticationError("User not authenticated");
+        }
         return payload;
 
     } catch (error) {

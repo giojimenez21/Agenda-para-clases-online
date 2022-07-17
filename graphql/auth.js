@@ -28,7 +28,7 @@ const authTypeDefs = gql`
 
 const authResolvers = {
     Mutation: {
-        login: async (_, { input }, context) => {
+        login: async (_, { input }) => {
             const { username, password } = input;
 
             const userExists = await User.findOne({
