@@ -10,8 +10,8 @@ const breakTypeDefs = gql`
 
     type Break {
         id: ID!
-        start: String!
-        end: String!
+        start: Date!
+        end: Date!
     }
 
     extend type Mutation {
@@ -44,12 +44,7 @@ const breakResolvers = {
         breaks: async () => {
             try {
                 const allBreaks = await Break.find();
-                
-                return allBreaks.map(b => ({
-                    id: b.id,
-                    start: moment(b.start).format("YYYY-MM-DD HH:mm"),
-                    end: moment(b.end).format("YYYY-MM-DD HH:mm")
-                }));
+                return allBreaks;
             } catch (error) {
                 throw new Error(error);
             }
@@ -161,9 +156,6 @@ const breakResolvers = {
             } catch (error) {
                 throw new Error(error)
             }
-
-            
-
         }
     },
 };

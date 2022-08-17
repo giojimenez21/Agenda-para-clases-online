@@ -35,12 +35,27 @@ const validateJWT = (token) => {
         return payload;
 
     } catch (error) {
-        console.log(error);
-        throw new AuthenticationError("Invalid token");
+        throw new AuthenticationError(error);
     }
 };
 
+const validateAuthByJWT = (token) => {
+    try {
+        if (token.length < 10) {
+            return null;
+        }
+
+        const payload = jwt.verify(token, process.env.SECRET_JWT);
+        
+        return payload;
+
+    } catch (error) {
+        throw new AuthenticationError(error);
+    }
+}
+
 module.exports = {
     generateJWT,
-    validateJWT
+    validateJWT,
+    validateAuthByJWT
 }

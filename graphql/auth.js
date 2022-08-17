@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const { gql, AuthenticationError } = require("apollo-server");
-const { generateJWT, validateJWT } = require("../helpers/generate_jwt");
+const { generateJWT, validateJWT, validateAuthByJWT } = require("../helpers/generate_jwt");
 const User = require("../models/User");
 
 const authTypeDefs = gql`
@@ -10,6 +10,8 @@ const authTypeDefs = gql`
     }
 
     type ResLogin {
+        id: ID!
+        username: String!
         authenticated: Boolean!
         token: String!
     }
@@ -46,16 +48,18 @@ const authResolvers = {
             if (!validPassword) {
                 throw new AuthenticationError("Password incorrect");
             }
-            const { authenticated } = userExists;
+            const { id, authenticated } = userExists;
             const token = await generateJWT(userExists);
-
+            console.log(id);
             return {
+                id,
+                username,
                 authenticated,
                 token
             };
         },
         authenticated: async (_, { input }, { token }) => {
-            const { authenticated } = validateJWT(token);
+            const { authenticated } = validateAuthByJWT(token);
             const { username, password, newPassword } = input;
             const userExists = await User.findOne({
                 username,
@@ -92,6 +96,8 @@ const authResolvers = {
             });
 
             return {
+                id: userExists.id,
+                username,
                 authenticated: true,
                 token: newToken
             };

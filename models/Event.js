@@ -24,6 +24,10 @@ const eventSchema = new Schema({
     end: {
         type: Date,
         required: true
+    },
+    idCalendar: {
+        type: String,
+        required: true
     }
     
 });
