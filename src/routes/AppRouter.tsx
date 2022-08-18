@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { PublicRoute } from "./PublicRoute";
 import { RootState } from "../redux/store";
 import { Login } from "../components/auth";
+import { PrivateRoute } from "./PrivateRoute";
 
 export const AppRouter = () => {
     const user = useSelector((state: RootState) => state.user);
@@ -11,6 +12,10 @@ export const AppRouter = () => {
         <div style={{ width: "100vw", height: "100vh" }}>
             <BrowserRouter>
                 <Routes>
+                    <Route 
+                        path="/"
+                        element={<h1>Index</h1>}
+                    />
                     <Route
                         path="/login"
                         element={
@@ -19,7 +24,13 @@ export const AppRouter = () => {
                             </PublicRoute>
                         }
                     />
-                    <Route path="/*" element={<h1>Home</h1>} />
+                    <Route 
+                        path="/home/*" 
+                        element={
+                            <PrivateRoute user={user}>
+                                <h1>Privadooo</h1>
+                            </PrivateRoute>} 
+                    />
                 </Routes>
             </BrowserRouter>
         </div>

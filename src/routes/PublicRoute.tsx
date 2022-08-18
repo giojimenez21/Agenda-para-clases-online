@@ -11,7 +11,7 @@ interface Props {
 
 export const PublicRoute = ({ children, user }: Props) => {
     return (!!user.id)
-        ? <Navigate to="/"/>
+        ? <Navigate to="/home"/>
         : children
 };
 

@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import {UserInfo} from '../redux/redux.interface';
 
 interface Props {
-    children: ReactElement | ReactElement[];
+    children: ReactElement | ReactElement[] | any;
     user: UserInfo
 }
 

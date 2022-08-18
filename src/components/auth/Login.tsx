@@ -2,9 +2,17 @@ import * as Yup from 'yup';
 import { Card, CardContent, Grid, Button, Box, Typography } from "@mui/material";
 import { Form, Formik } from "formik";
 import { InputCustom } from "../layout";
+import { useMutation  } from '@apollo/client';
+import { LOGIN, UserInput, UserResponse } from '../../gql/auth.gql';
+import { useDispatch } from "react-redux";
+import { loginAction } from '../../redux/slices/user.slice';
 
 
 export const Login = () => {
+    const dispatch = useDispatch();
+
+    const [loginGql, {data, error, loading}] = useMutation<{login: UserResponse}, {input: UserInput}>(LOGIN)
+    
     return (
         <div className="bg-login">
             <Grid
@@ -21,8 +29,19 @@ export const Login = () => {
                                     username: "",
                                     password: "",
                                 }}
-                                onSubmit={(values) => {
-                                    console.log(values);
+                                onSubmit={({username, password}) => {
+                                    loginGql({
+                                        variables: {
+                                            input: {
+                                                username,
+                                                password
+                                            }
+                                        }
+                                    });
+                                    if(data) {
+                                        const { login } = data;
+                                        dispatch(loginAction({...login}));
+                                    }
                                 }}
                                 validationSchema={Yup.object({
                                     username: Yup.string()
