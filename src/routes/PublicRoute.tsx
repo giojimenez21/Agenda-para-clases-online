@@ -1,17 +1,18 @@
 import { ReactElement } from "react";
 import { Navigate } from "react-router-dom";
-import { User } from "../types";
+import { UserInfo } from "../redux/redux.interface";
+
 
 interface Props {
-    children: ReactElement | ReactElement[],
-    user: User
+    children: JSX.Element | JSX.Element[] | any
+    user: UserInfo
 }
 
 
 export const PublicRoute = ({ children, user }: Props) => {
     return (!!user.id)
-        ? children
-        : <Navigate to="/"/>
+        ? <Navigate to="/"/>
+        : children
 };
 
 
