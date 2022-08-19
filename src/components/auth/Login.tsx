@@ -1,20 +1,34 @@
-import * as Yup from 'yup';
-import { Card, CardContent, Grid, Button, Box, Typography } from "@mui/material";
+import * as Yup from "yup";
+import { useState } from "react";
 import { Form, Formik } from "formik";
-import { InputCustom } from "../layout";
-import { useMutation  } from '@apollo/client';
-import { LOGIN, UserInput, UserResponse } from '../../gql/auth.gql';
 import { useDispatch } from "react-redux";
-import { loginAction } from '../../redux/slices/user.slice';
+import { useMutation } from "@apollo/client";
+import { Card, CardContent, Grid, Button, Box, Typography } from "@mui/material";
 
+import { AlertCustom, InputCustom } from "../layout";
+import { LOGIN, UserInput, UserResponse } from "../../gql";
+import { loginAction } from "../../redux/slices/user.slice";
+import { AlertCustomProps } from "../layout/layout.interface";
 
 export const Login = () => {
     const dispatch = useDispatch();
+    const [infoAlert, setInfoAlert] = useState<AlertCustomProps>({
+        openStatus: false,
+    });
 
-    const [loginGql, {data, error, loading}] = useMutation<{login: UserResponse}, {input: UserInput}>(LOGIN)
-    
+    const [loginGql, { error }] = useMutation<{ login: UserResponse },{ input: UserInput }>(LOGIN, {
+        onCompleted(data) {
+            const { login } = data;
+            dispatch(loginAction({ ...login }));
+        },
+        onError(error) {
+            setInfoAlert({ openStatus: true, status: "error", message: error.message });
+        },
+    });
+
     return (
         <div className="bg-login">
+            {error && <AlertCustom infoAlert={infoAlert}/>}
             <Grid
                 container
                 justifyContent="center"
@@ -29,30 +43,31 @@ export const Login = () => {
                                     username: "",
                                     password: "",
                                 }}
-                                onSubmit={({username, password}) => {
+                                onSubmit={({ username, password }) => {
                                     loginGql({
                                         variables: {
-                                            input: {
-                                                username,
-                                                password
-                                            }
-                                        }
+                                            input: { username, password },
+                                        },
                                     });
-                                    if(data) {
-                                        const { login } = data;
-                                        dispatch(loginAction({...login}));
-                                    }
                                 }}
                                 validationSchema={Yup.object({
-                                    username: Yup.string()
-                                        .required("Debe ingresar el usuario"),
-                                    password: Yup.string()
-                                        .required("Debe ingresar la contraseña")
+                                    username: Yup.string().required(
+                                        "Debe ingresar el usuario"
+                                    ),
+                                    password: Yup.string().required(
+                                        "Debe ingresar la contraseña"
+                                    ),
                                 })}
                             >
                                 {(formik) => (
                                     <Form noValidate>
-                                        <Typography variant='h4' align='center' marginBottom={3} color="primary" fontWeight={"bold"}>
+                                        <Typography
+                                            variant="h4"
+                                            align="center"
+                                            marginBottom={3}
+                                            color="primary"
+                                            fontWeight={"bold"}
+                                        >
                                             Iniciar Sesión
                                         </Typography>
                                         <InputCustom
@@ -75,7 +90,7 @@ export const Login = () => {
                                             <Button
                                                 type="submit"
                                                 variant="contained"
-                                                color='primary'
+                                                color="primary"
                                             >
                                                 Entrar
                                             </Button>
