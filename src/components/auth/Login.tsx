@@ -1,29 +1,31 @@
 import * as Yup from "yup";
-import { useState } from "react";
 import { Form, Formik } from "formik";
-import { useDispatch } from "react-redux";
 import { useMutation } from "@apollo/client";
 import { Card, CardContent, Grid, Button, Box, Typography } from "@mui/material";
 
 import { AlertCustom, InputCustom } from "../layout";
-import { LOGIN, UserInput, UserResponse } from "../../gql";
-import { loginAction } from "../../redux/slices/user.slice";
-import { AlertCustomProps } from "../layout/layout.interface";
+import { LOGIN, RENEW, UserInput, UserResponse } from "../../gql";
+import { useAlert } from "../../hooks/useAlert";
 
 export const Login = () => {
-    const dispatch = useDispatch();
-    const [infoAlert, setInfoAlert] = useState<AlertCustomProps>({
-        openStatus: false,
-    });
-
+    const {infoAlert, setInfoAlert } = useAlert();
     const [loginGql, { error }] = useMutation<{ login: UserResponse },{ input: UserInput }>(LOGIN, {
-        onCompleted(data) {
-            const { login } = data;
-            dispatch(loginAction({ ...login }));
+        onCompleted({ login }) {
+            const { token } = login;
+            localStorage.setItem('token', token);
         },
         onError(error) {
             setInfoAlert({ openStatus: true, status: "error", message: error.message });
         },
+        update(cache, { data }) {
+            cache.writeQuery({
+                query: RENEW,
+                data: {
+                    userRenew: data?.login
+                }
+            })
+            
+        }
     });
 
     return (
