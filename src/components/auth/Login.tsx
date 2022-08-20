@@ -7,7 +7,7 @@ import { AlertCustom, InputCustom } from "../layout";
 import { LOGIN, RENEW, UserInput, UserResponse } from "../../gql";
 import { useAlert } from "../../hooks/useAlert";
 
-export const Login = () => {
+const Login = () => {
     const {infoAlert, setInfoAlert } = useAlert();
     const [loginGql, { error }] = useMutation<{ login: UserResponse },{ input: UserInput }>(LOGIN, {
         onCompleted({ login }) {
@@ -107,3 +107,5 @@ export const Login = () => {
         </div>
     );
 };
+
+export default Login;

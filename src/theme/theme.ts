@@ -15,13 +15,16 @@ const theme = createTheme({
     palette: {
         themeText: "#403834",
         primary: {
-            main: "#88549d"
+            main: "#88549d",
+            contrastText: "#ffffff"
         },
         secondary: {
-            main: "#779eb7"
+            main: "#779eb7",
+            contrastText: "#ffffff"
         },
         third: {
-            main: "#ffe142"
+            main: "#ffe142",
+            contrastText: "#ffffff"
         },
         
     }

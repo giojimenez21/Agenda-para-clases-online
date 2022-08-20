@@ -7,11 +7,12 @@ interface Props {
     user: UserResponse
 }
 
-
-export const PrivateRoute = ({ children, user }: Props) => {
+const PrivateRoute = ({ children, user }: Props) => {
     return (!!user.id)
         ? children
         : <Navigate to="/login"/>
 };
+
+export default PrivateRoute;
 
 
