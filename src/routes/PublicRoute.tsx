@@ -1,11 +1,10 @@
-import { ReactElement } from "react";
 import { Navigate } from "react-router-dom";
-import { UserInfo } from "../redux/redux.interface";
+import { UserResponse } from "../gql";
 
 
 interface Props {
     children: JSX.Element | JSX.Element[] | any
-    user: UserInfo
+    user: UserResponse
 }
 
 
