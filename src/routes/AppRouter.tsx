@@ -1,9 +1,9 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense } from "react";
 import { useQuery } from "@apollo/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { PublicRoute } from "./PublicRoute";
-import { RENEW, UserResponse } from "../gql";
+import { cache, RENEW, UserResponse } from "../gql";
 import { Spinner } from "../components/layout";
 import { NotAuthorizedRoutes } from "./NotAuthorizedRoutes";
 import { AdminRoutes } from "./AdminRoutes";
@@ -19,9 +19,8 @@ export const EmptyUser: UserResponse = {
 };
 
 export const AppRouter = () => {
-    const [user, setuser] = useState<UserResponse>(EmptyUser);
-
-    const { loading } = useQuery<{ userRenew: UserResponse }>(RENEW, {
+    const { userRenew } = cache.readQuery<{ userRenew: UserResponse }>({ query: RENEW }) || { userRenew: EmptyUser };
+    const { loading, error } = useQuery<{ userRenew: UserResponse }>(RENEW, {
         context: {
             headers: {
                 "x-token": localStorage.getItem("token") || "",
@@ -29,7 +28,6 @@ export const AppRouter = () => {
         },
         onCompleted({ userRenew }) {
             localStorage.setItem("token", userRenew.token);
-            setuser(userRenew);
         },
     });
 
@@ -68,7 +66,7 @@ export const AppRouter = () => {
                         <Route
                             path="/login"
                             element={
-                                <PublicRoute user={user}>
+                                <PublicRoute user={userRenew}>
                                     <Login />
                                 </PublicRoute>
                             }
@@ -76,8 +74,8 @@ export const AppRouter = () => {
                         <Route
                             path="/home/*"
                             element={
-                                <PrivateRoute user={user}>
-                                    {user.authenticated ? (
+                                <PrivateRoute user={userRenew}>
+                                    {userRenew.authenticated ? (
                                         <AdminRoutes />
                                     ) : (
                                         <NotAuthorizedRoutes />

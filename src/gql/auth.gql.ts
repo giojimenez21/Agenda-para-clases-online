@@ -33,3 +33,18 @@ export const RENEW = gql`
         }
     }
 `;
+
+export interface AuthenticatedInput extends UserInput{
+    newPassword: string;
+}
+
+export const AUTHENTICATED = gql`
+    mutation Authenticated($input: AuthenticatedInput) {
+        authenticated(input: $input) {
+            id
+            username
+            authenticated
+            token
+        }
+    }
+`

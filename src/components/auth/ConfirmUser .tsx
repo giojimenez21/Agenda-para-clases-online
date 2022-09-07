@@ -1,10 +1,37 @@
 import * as Yup from 'yup';
 import { Form, Formik } from "formik";
+import { useMutation } from '@apollo/client';
 import { Box, Button, Card, CardContent, CardMedia, Typography } from "@mui/material";
 
-import { InputCustom } from "../layout";
+import { AlertCustom, InputCustom } from "../layout";
+import { useAlert } from '../../hooks/useAlert';
+import { AUTHENTICATED, AuthenticatedInput, cache, RENEW, UserResponse } from '../../gql';
 
 export const ConfirmUser = () => {
+    const cacheUser = cache.readQuery<{ userRenew: UserResponse | null }>({ query: RENEW });
+    const { infoAlert, setInfoAlert } = useAlert();
+    const [authenticatedGql, { error }] = useMutation<{ authenticated:UserResponse }, { input: AuthenticatedInput }>( AUTHENTICATED, {
+        context: {
+            headers: {
+                "x-token": localStorage.getItem("token") || "",
+            },
+        },
+        onCompleted({authenticated}) {
+            const { token } = authenticated;
+            localStorage.setItem('token', token);
+        },
+        onError(error) {
+            setInfoAlert({ openStatus: true, status: "error", message: error.message });
+        },
+        update(cache, { data }){
+            cache.writeQuery({
+                query: RENEW,
+                data: {
+                    userRenew: data?.authenticated
+                }
+            })
+        }
+    } );
 
     return (
         <Box
@@ -17,12 +44,13 @@ export const ConfirmUser = () => {
             }}
             bgcolor="primary.light"
         >
+            {error && <AlertCustom infoAlert={infoAlert}/>}
             <Card sx={{ maxWidth: 500 }}>
                 <CardMedia
                     component="img"
                     height="250"
                     image="/sign-g4a043953a_1280.png"
-                    alt="green iguana"
+                    alt="Sorry image"
                 />
                 <CardContent>
                     <Typography
@@ -41,8 +69,16 @@ export const ConfirmUser = () => {
                             password: "",
                             newPassword: "",
                         }}
-                        onSubmit={(values) => {
-                            console.log(values);
+                        onSubmit={({password, newPassword}) => {
+                            authenticatedGql({
+                                variables: {
+                                    input: {
+                                        username: cacheUser?.userRenew?.username!,
+                                        password,
+                                        newPassword
+                                    }
+                                }
+                            })
                         }}
                         validationSchema={Yup.object({
                             password: Yup.string()

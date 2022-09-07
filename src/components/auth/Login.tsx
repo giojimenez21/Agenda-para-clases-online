@@ -8,7 +8,7 @@ import { LOGIN, RENEW, UserInput, UserResponse } from "../../gql";
 import { useAlert } from "../../hooks/useAlert";
 
 const Login = () => {
-    const {infoAlert, setInfoAlert } = useAlert();
+    const { infoAlert, setInfoAlert } = useAlert();
     const [loginGql, { error }] = useMutation<{ login: UserResponse },{ input: UserInput }>(LOGIN, {
         onCompleted({ login }) {
             const { token } = login;
